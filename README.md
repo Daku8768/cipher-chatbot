@@ -98,3 +98,4 @@ You are now ready to start the server!
 python app.py
 
 The server will start, and you can access the chatbot by navigating to http://localhost:5000 in your web browser.
+PROJECT CONTRIBUTERS ==  kavish, ishaan
