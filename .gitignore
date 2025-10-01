@@ -1,0 +1,5 @@
+# Hide our secret file
+.env
+
+# Hide Python cache files
+__pycache__/
