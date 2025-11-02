@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIPHER BOT</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #0f0f0f;
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 64px;
+            background-color: #0f0f0f;
+            border-right: 1px solid #374151;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 0;
+            gap: 24px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            width: 32px;
+            height: 32px;
+            background-color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-inner {
+            width: 24px;
+            height: 24px;
+            background-color: black;
+            border-radius: 4px;
+            transform: rotate(45deg);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover .logo-inner {
+            transform: rotate(45deg) scale(1.1);
+        }
+
+        .sidebar-btn {
+            width: 40px;
+            height: 40px;
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #374151;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+            z-index: -1;
+        }
+
+        .sidebar-btn:hover::before {
+            transform: scaleX(1);
+        }
+
+        .sidebar-btn:hover {
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .sidebar-btn.active {
+            color: white;
+            background-color: #374151;
+        }
+
+        .pro-badge {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: black;
+            margin-top: auto;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+        }
+
+        .pro-badge:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 16px rgba(6, 182, 212, 0.5);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0; /* Important for flex child */
+        }
+
+        /* Homepage Styles */
+        .homepage {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .homepage.fade-out {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        .main-logo {
+            margin-bottom: 48px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .main-logo h1 {
+            font-size: 36px;
+            font-weight: 300;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .main-logo .pro {
+            color: #22d3ee;
+            font-weight: 400;
+        }
+
+        .search-container {
+            width: 100%;
+            max-width: 672px;
+            margin-bottom: 32px;
+            position: relative;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .search-input {
+            width: 100%;
+            height: 56px;
+            background-color: #1a1a1a;
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 0 160px 0 16px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .search-input:focus {
+            border-color: #22d3ee;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .search-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .search-actions {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-btn:hover {
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            color: black;
+        }
+
+        .search-btn:hover {
+            background: linear-gradient(135deg, #0891b2, #0e7490);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+        }
+
+        /* Enhanced Reasoning Button Styles */
+        .reasoning-btn {
+            background-color: transparent;
+            border: 2px solid #374151;
+            transition: all 0.3s ease;
+            width: auto !important;
+            min-width: 120px;
+            height: 36px;
+            padding: 0 12px;
+            gap: 8px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .reasoning-btn.active {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            border-color: #8b5cf6;
+            color: white;
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+        }
+
+        .reasoning-btn:hover:not(.active) {
+            border-color: #8b5cf6;
+            color: #c4b5fd;
+            background-color: rgba(139, 92, 246, 0.1);
+        }
+
+        .reasoning-text {
+            display: none;
+        }
+
+        .reasoning-btn .reasoning-text {
+            display: inline;
+            margin-left: 4px;
+        }
+
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .category-btn {
+            background: transparent;
+            border: 1px solid #374151;
+            color: #d1d5db;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .category-btn:hover {
+            background-color: #374151;
+            color: white;
+            border-color: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        /* Chat Interface */
+        .chat-interface {
+            flex: 1;
+            display: none; /* Start hidden */
+            flex-direction: column;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 0; /* Important for flex child */
+        }
+
+        .chat-interface.active {
+            display: flex;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .chat-header {
+            border-bottom: 1px solid #374151;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .chat-title-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .chat-title {
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .chat-tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-btn.active {
+            background-color: white;
+            color: black;
+        }
+
+        .tab-btn:not(.active):hover {
+            color: white;
+        }
+
+        .share-btn {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            color: black;
+            border: 1px solid #06b6d4;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .share-btn:hover {
+            background: linear-gradient(135deg, #0891b2, #0e7490);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            scroll-behavior: smooth;
+            min-height: 0; /* Critical for proper scrolling */
+        }
+
+        .messages {
+            max-width: 896px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-height: 100%; /* Ensure content takes full height */
+        }
+
+        .message {
+            font-size: 16px;
+            line-height: 1.6;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: messageIn 0.5s ease-out forwards;
+            padding: 16px;
+            border-radius: 8px;
+            word-wrap: break-word;
+        }
+
+        .message.user {
+            background-color: #1a1a1a;
+            margin-left: 20%;
+            border-left: 3px solid #06b6d4;
+        }
+
+        .message.assistant {
+            background-color: #0f0f0f;
+            margin-right: 20%;
+            border-left: 3px solid #8b5cf6;
+        }
+
+        .message-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out 0.3s forwards;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .action-btn:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #9ca3af;
+            padding: 16px;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #9ca3af;
+            border-radius: 50%;
+            animation: bounce 1.4s ease-in-out infinite both;
+        }
+
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        .follow-up-container {
+            border-top: 1px solid #374151;
+            padding: 16px;
+            flex-shrink: 0;
+        }
+
+        .follow-up-wrapper {
+            max-width: 896px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .follow-up-input {
+            width: 100%;
+            height: 48px;
+            background-color: #1a1a1a;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 0 160px 0 16px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .follow-up-input:focus {
+            border-color: #22d3ee;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.2);
+        }
+
+        .follow-up-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .follow-up-actions {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .small-icon-btn {
+            width: 24px;
+            height: 24px;
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .small-icon-btn:hover {
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            color: black;
+        }
+
+        .send-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #0891b2, #0e7490);
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(6, 182, 212, 0.4);
+        }
+
+        .send-btn:disabled {
+            background-color: #374151;
+            color: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Enhanced Small Reasoning Button for Chat */
+        .reasoning-btn-small {
+            background-color: transparent;
+            border: 2px solid #374151;
+            border-radius: 4px;
+            width: auto !important;
+            min-width: 100px;
+            height: 28px;
+            padding: 0 8px;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .reasoning-btn-small.active {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            border-color: #8b5cf6;
+            color: white;
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+        }
+
+        .reasoning-btn-small:hover:not(.active) {
+            border-color: #8b5cf6;
+            color: #c4b5fd;
+            background-color: rgba(139, 92, 246, 0.1);
+        }
+
+        .reasoning-btn-small .reasoning-text {
+            display: inline;
+            margin-left: 2px;
+        }
+
+        .reasoning-indicator {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+
+        .reasoning-btn.active .reasoning-indicator,
+        .reasoning-btn-small.active .reasoning-indicator {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Custom Scrollbar */
+        .messages-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .messages-container::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 4px;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 4px;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes messageIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0);
+            } 40% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 48px;
+            }
+            
+            .main-logo h1 {
+                font-size: 28px;
+            }
+            
+            .search-container {
+                max-width: 100%;
+                margin: 0 16px 32px;
+            }
+            
+            .categories {
+                padding: 0 16px;
+            }
+            
+            .category-btn {
+                font-size: 14px;
+                padding: 6px 12px;
+            }
+
+            .message.user {
+                margin-left: 5%;
+            }
+
+            .message.assistant {
+                margin-right: 5%;
+            }
+
+            .reasoning-btn {
+                min-width: 100px;
+                font-size: 12px;
+            }
+
+            .reasoning-btn-small {
+                min-width: 80px;
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-inner"></div>
+            </div>
+            
+            <button class="sidebar-btn" onclick="newChat()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <button class="sidebar-btn active" onclick="goHome()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                    </svg>
+                </button>
+                <button class="sidebar-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polygon points="10,8 16,12 10,16 10,8"></polygon>
+                    </svg>
+                </button>
+                <button class="sidebar-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </button>
+                <button class="sidebar-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </button>
+                <button class="sidebar-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="7" y1="17" x2="17" y2="7"></line>
+                        <polyline points="7,7 17,7 17,17"></polyline>
+                    </svg>
+                </button>
+                <button class="sidebar-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7,10 12,15 17,10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="pro-badge">pro</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Homepage -->
+            <div class="homepage" id="homepage">
+                <div class="main-logo">
+                    <h1>CIPHER<span class="pro">BOT</span></h1>
+                </div>
+
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        id="mainSearchInput"
+                        placeholder="Ask anything or @mention a Space"
+                        onkeydown="handleMainSearch(event)"
+                    >
+                    <div class="search-actions">
+                        <button class="icon-btn reasoning-btn" onclick="toggleReasoning()" title="Toggle Reasoning Mode">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5c0 .84-.53 1.57-1.3 1.87-.6.24-.7 1.02-.1 1.43l.8.53c.77.51.77 1.58 0 2.09l-.8.53c-.6.41-.5 1.19.1 1.43.77.3 1.3 1.03 1.3 1.87A2.5 2.5 0 0 1 9.5 16 2.5 2.5 0 0 1 7 13.5c0-.84.53-1.57 1.3-1.87.6-.24.7-1.02.1-1.43l-.8-.53c-.77-.51-.77-1.58 0-2.09l.8-.53c.6-.41.5-1.19-.1-1.43A2.488 2.488 0 0 1 7 4.5 2.5 2.5 0 0 1 9.5 2"/>
+                                <path d="M14 12h7"/>
+                                <path d="M14 9h7"/>
+                                <path d="M14 15h7"/>
+                            </svg>
+                            <span class="reasoning-text">Reasoning</span>
+                        </button>
+                        <button class="icon-btn search-btn" onclick="performMainSearch()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="7" y1="17" x2="17" y2="7"></line>
+                                <polyline points="7,7 17,7 17,17"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="categories">
+                    <button class="category-btn" onclick="searchCategory('Health')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"></path>
+                        </svg>
+                        Health
+                    </button>
+                    <button class="category-btn" onclick="searchCategory('Summarize')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10,9 9,9 8,9"></polyline>
+                        </svg>
+                        Summarize
+                    </button>
+                    <button class="category-btn" onclick="searchCategory('Research')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        Research
+                    </button>
+                    <button class="category-btn" onclick="searchCategory('Study guide')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+                        </svg>
+                        Study guide
+                    </button>
+                    <button class="category-btn" onclick="searchCategory('Flashcards')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                        Flashcards
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Interface -->
+            <div class="chat-interface" id="chatInterface">
+                <div class="chat-header">
+                    <div class="chat-title-section">
+                        <h1 class="chat-title" id="chatTitle">Chat</h1>
+                        <div class="chat-tabs">
+                            <button class="tab-btn active" id="answerTab" onclick="switchTab('answer')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="7" y1="17" x2="17" y2="7"></line>
+                                    <polyline points="7,7 17,7 17,17"></polyline>
+                                </svg>
+                                Answer
+                            </button>
+                            <button class="tab-btn" id="searchTab" onclick="switchTab('search')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                    <button class="share-btn">Share</button>
+                </div>
+
+                <div class="messages-container">
+                    <div class="messages" id="messages"></div>
+                </div>
+
+                <div class="follow-up-container">
+                    <div class="follow-up-wrapper">
+                        <input 
+                            type="text" 
+                            class="follow-up-input" 
+                            id="followUpInput"
+                            placeholder="Ask a follow-up..."
+                            onkeydown="handleFollowUp(event)"
+                        >
+                        <div class="follow-up-actions">
+                            <button class="small-icon-btn reasoning-btn-small" onclick="toggleReasoning()" title="Toggle Reasoning Mode">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5c0 .84-.53 1.57-1.3 1.87-.6.24-.7 1.02-.1 1.43l.8.53c.77.51.77 1.58 0 2.09l-.8.53c-.6.41-.5 1.19.1 1.43.77.3 1.3 1.03 1.3 1.87A2.5 2.5 0 0 1 9.5 16 2.5 2.5 0 0 1 7 13.5c0-.84.53-1.57 1.3-1.87.6-.24.7-1.02.1-1.43l-.8-.53c-.77-.51-.77-1.58 0-2.09l.8-.53c.6-.41.5-1.19-.1-1.43A2.488 2.488 0 0 1 7 4.5 2.5 2.5 0 0 1 9.5 2"/>
+                                </svg>
+                                <span class="reasoning-text">Reasoning</span>
+                            </button>
+                            <button class="small-icon-btn send-btn" id="sendBtn" onclick="sendFollowUp()">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="7" y1="17" x2="17" y2="7"></line>
+                                    <polyline points="7,7 17,7 17,17"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentView = 'home';
+        let messages = [];
+        let isLoading = false;
+        let activeTab = 'answer';
+        let reasoningMode = false;
+
+        function goHome() {
+            currentView = 'home';
+            const homepage = document.getElementById('homepage');
+            const chatInterface = document.getElementById('chatInterface');
+            
+            chatInterface.classList.remove('active');
+            setTimeout(() => {
+                homepage.classList.remove('fade-out');
+                homepage.style.display = 'flex';
+                chatInterface.style.display = 'none'; // Ensure chat is hidden
+            }, 200);
+            
+            updateSidebarButtons();
+        }
+
+        function newChat() {
+            messages = [];
+            isLoading = false;
+            document.getElementById('mainSearchInput').value = '';
+            document.getElementById('followUpInput').value = '';
+            document.getElementById('messages').innerHTML = '';
+            goHome();
+        }
+
+        function updateSidebarButtons() {
+            const buttons = document.querySelectorAll('.sidebar-btn');
+            buttons.forEach((btn, index) => {
+                if (index === 2) { // Home button (adjust index if needed)
+                    btn.classList.toggle('active', currentView === 'home');
+                }
+            });
+        }
+
+        function switchTab(tab) {
+            activeTab = tab;
+            document.getElementById('answerTab').classList.toggle('active', tab === 'answer');
+            document.getElementById('searchTab').classList.toggle('active', tab === 'search');
+        }
+
+        function handleMainSearch(event) {
+            if (event.key === 'Enter') {
+                performMainSearch();
+            }
+        }
+
+        function performMainSearch() {
+            const input = document.getElementById('mainSearchInput');
+            const query = input.value.trim();
+            if (query) {
+                startChat(query);
+            }
+        }
+
+        function searchCategory(category) {
+            startChat(`Help me with ${category.toLowerCase()}`);
+        }
+
+        function startChat(query) {
+            currentView = 'chat';
+            const homepage = document.getElementById('homepage');
+            const chatInterface = document.getElementById('chatInterface');
+            
+            // Hide homepage first
+            homepage.classList.add('fade-out');
+            
+            setTimeout(() => {
+                homepage.style.display = 'none';
+                chatInterface.style.display = 'flex'; // Show chat interface
+                
+                // Small delay to ensure display is set before adding active class
+                setTimeout(() => {
+                    chatInterface.classList.add('active');
+                }, 10);
+            }, 200);
+            
+            const title = query.length > 30 ? query.substring(0, 30) + '...' : query;
+            document.getElementById('chatTitle').textContent = title;
+            
+            messages = [{
+                id: Date.now().toString(),
+                content: query,
+                role: 'user',
+                timestamp: new Date(),
+                reasoning: reasoningMode
+            }];
+            
+            document.getElementById('mainSearchInput').value = '';
+            updateSidebarButtons();
+            renderMessages();
+            sendMessageToBackend(query);
+        }
+
+        function handleFollowUp(event) {
+            if (event.key === 'Enter') {
+                sendFollowUp();
+            }
+        }
+
+        function sendFollowUp() {
+            const input = document.getElementById('followUpInput');
+            const query = input.value.trim();
+            if (query && !isLoading) {
+                const userMessage = {
+                    id: Date.now().toString(),
+                    content: query,
+                    role: 'user',
+                    timestamp: new Date(),
+                    reasoning: reasoningMode
+                };
+                
+                messages.push(userMessage);
+                input.value = '';
+                renderMessages();
+                sendMessageToBackend(query);
+            }
+        }
+
+        async function sendMessageToBackend(message) {
+            isLoading = true;
+            updateSendButton();
+            renderMessages();
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        user_id: 1,
+                        reasoning: reasoningMode
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                const aiMessage = {
+                    id: (Date.now() + 1).toString(),
+                    content: data.response,
+                    role: 'assistant',
+                    timestamp: new Date(),
+                    reasoning: data.reasoning_used || reasoningMode
+                };
+                
+                messages.push(aiMessage);
+                isLoading = false;
+                updateSendButton();
+                renderMessages();
+
+            } catch (error) {
+                console.error('Error sending message:', error);
+                
+                let errorContent = 'Sorry, I encountered an error while processing your request.';
+                
+                // Provide more specific error messages
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    errorContent = 'Unable to connect to the server. Please make sure your backend server is running on the correct port.';
+                } else if (error.message.includes('404')) {
+                    errorContent = 'Chat endpoint not found. Please check if your backend API is properly configured.';
+                } else if (error.message.includes('500')) {
+                    errorContent = 'Server error occurred. Please check your backend logs for more details.';
+                }
+                
+                const errorMessage = {
+                    id: (Date.now() + 1).toString(),
+                    content: errorContent,
+                    role: 'assistant',
+                    timestamp: new Date()
+                };
+                
+                messages.push(errorMessage);
+                isLoading = false;
+                updateSendButton();
+                renderMessages();
+            }
+        }
+
+        function renderMessages() {
+            const messagesContainer = document.getElementById('messages');
+            messagesContainer.innerHTML = '';
+            
+            messages.forEach((message, index) => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${message.role}`;
+                
+                let messageContent = message.content;
+                
+                // Remove any [number] patterns from the response
+                messageContent = messageContent.replace(/\[\d+\]/g, '');
+                
+                if (message.reasoning && message.role === 'user') {
+                    messageContent = `🧠 ${messageContent}`;
+                }
+                
+                // Convert markdown to HTML for better formatting
+                messageContent = messageContent
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/\n/g, '<br>');
+                
+                messageDiv.innerHTML = messageContent;
+                messageDiv.style.animationDelay = `${index * 0.1}s`;
+                
+                if (message.role === 'assistant' && index === messages.length - 1 && !isLoading) {
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.className = 'message-actions';
+                    actionsDiv.innerHTML = `
+                        <button class="action-btn" onclick="copyMessage('${message.id}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                        <button class="action-btn" onclick="shareMessage()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                <polyline points="16,6 12,2 8,6"></polyline>
+                                <line x1="12" y1="2" x2="12" y2="15"></line>
+                            </svg>
+                            Share
+                        </button>
+                        <button class="action-btn" onclick="rewriteMessage()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                                <path d="M21 3v5h-5"></path>
+                                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                                <path d="M3 21v-5h5"></path>
+                            </svg>
+                            Rewrite
+                        </button>
+                    `;
+                    messageDiv.appendChild(actionsDiv);
+                }
+                
+                messagesContainer.appendChild(messageDiv);
+            });
+            
+            if (isLoading) {
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'loading';
+                const loadingText = reasoningMode ? 'Analyzing with AI reasoning...' : 'Searching database...';
+                loadingDiv.innerHTML = `
+                    <div class="loading-dots">
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                    </div>
+                    <span>${loadingText}</span>
+                `;
+                messagesContainer.appendChild(loadingDiv);
+            }
+            
+            // Ensure proper scrolling to bottom
+            setTimeout(() => {
+                const container = messagesContainer.parentElement;
+                container.scrollTop = container.scrollHeight;
+            }, 100);
+        }
+
+        function updateSendButton() {
+            const sendBtn = document.getElementById('sendBtn');
+            const followUpInput = document.getElementById('followUpInput');
+            const hasText = followUpInput.value.trim().length > 0;
+            
+            sendBtn.disabled = isLoading || !hasText;
+            followUpInput.disabled = isLoading;
+        }
+
+        function toggleReasoning() {
+            reasoningMode = !reasoningMode;
+            
+            const homeReasoningBtn = document.querySelector('.homepage .reasoning-btn');
+            const chatReasoningBtn = document.querySelector('.chat-interface .reasoning-btn-small');
+            
+            if (homeReasoningBtn) {
+                homeReasoningBtn.classList.toggle('active', reasoningMode);
+            }
+            if (chatReasoningBtn) {
+                chatReasoningBtn.classList.toggle('active', reasoningMode);
+            }
+            
+            const message = reasoningMode ? 
+                'Reasoning mode enabled! AI will provide detailed step-by-step analysis.' : 
+                'Reasoning mode disabled! Using quick database responses.';
+            
+            showNotification(message);
+        }
+
+        function showNotification(message) {
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+                z-index: 1000;
+                font-size: 14px;
+                opacity: 0;
+                transform: translateX(100px);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100px)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        function copyMessage(messageId) {
+            const message = messages.find(msg => msg.id === messageId);
+            if (message) {
+                navigator.clipboard.writeText(message.content).then(() => {
+                    showNotification('Message copied to clipboard!');
+                });
+            }
+        }
+
+        function shareMessage() {
+            showNotification('Share functionality would be implemented here');
+        }
+
+        function rewriteMessage() {
+            if (messages.length > 0) {
+                const lastUserMessage = messages.slice().reverse().find(msg => msg.role === 'user');
+                if (lastUserMessage) {
+                    sendMessageToBackend(`Please rewrite and improve your previous response about: ${lastUserMessage.content}`);
+                }
+            }
+        }
+
+        // Update send button state when typing
+        document.getElementById('followUpInput').addEventListener('input', updateSendButton);
+
+        // Initialize
+        updateSidebarButtons();
+        updateSendButton();
+    </script>
+</body>
+</html>
